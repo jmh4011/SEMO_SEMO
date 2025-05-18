@@ -1,0 +1,10 @@
+{
+  "1055278715657011210": {
+    "team_timeout": 600,
+    "default_team_count": 2
+  },
+  "1372935338795991080": {
+    "team_timeout": 300,
+    "default_team_count": 3
+  }
+} 
