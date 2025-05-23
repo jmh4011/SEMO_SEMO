@@ -1,0 +1,22 @@
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  team-bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: discord-team-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./bot:/bot
+    working_dir: /bot
+    command: python bot.py
+    depends_on:
+      - redis
