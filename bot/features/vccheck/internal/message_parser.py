@@ -5,11 +5,6 @@ MESSAGE_URL_REGEX = re.compile(r"https://discord(?:app)?\.com/channels/\d+/(\d+)
 
 
 def parse_message(interaction: Interaction, raw: str) -> tuple[int, int]:
-    if interaction.message.reference and not raw:
-        msg = interaction.message.reference
-        if msg.resolved:
-            return msg.resolved.channel.id, msg.resolved.id
-        raise ValueError("답장 메시지를 찾을 수 없습니다.")
 
     try:
         if raw.startswith("https://"):
