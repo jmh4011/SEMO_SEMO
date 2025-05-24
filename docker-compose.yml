@@ -6,17 +6,43 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
-  team-bot:
+  fluentd:
+    build:
+      context: ./fluentd
+      dockerfile: Dockerfile
+    container_name: fluentd
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./logs:/fluentd/logs
+      - ./fluentd/conf:/fluentd/etc
+    restart: unless-stopped
+    
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki:/loki 
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+
+  bot:
     build:
       context: ./bot
       dockerfile: Dockerfile
-    container_name: discord-team-bot
+    container_name: bot
     restart: unless-stopped
-    env_file:
-      - .env
     volumes:
       - ./bot:/bot
+      - ./logs:/bot/logs
     working_dir: /bot
-    command: python bot.py
+    env_file:
+      - ${ENV_FILE}
+    command: ["./wait-for-it.sh", "fluentd:24224", "--", "python", "main.py"]
     depends_on:
       - redis
+      - fluentd
